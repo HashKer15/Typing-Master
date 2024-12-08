@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Master</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.aBody {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background: linear-gradient(#1488CC,#16A085); /* Light blue background */
+}
+
+.aLogo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 2rem;
+  background: #bbdefb;
+  color: #01579b; 
+  border-bottom: 2px solid #01579b;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 50px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.logo-text,
+.course-text {
+  margin: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: #bbdefb; /* Lighter blue background for container */
+    color: #01579b; /* Dark blue text */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px black; /* Dark blue shadow */
+    border: 2px solid #01579b;
+}
+
+.text-display {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 5px;
+    background: #90caf9; /* Lighter blue background for text display */
+    color: #01579b; /* Dark blue text */
+    font-weight: bold;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.typing-area {
+    width: 100%;
+    height: 70px;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 1.1rem;
+    border: 2px solid #01579b; /* Dark blue border */
+    border-radius: 5px;
+    resize: none;
+    background: #e3f2fd; /* Light blue background */
+    color: #01579b; /* Dark blue text */
+}
+
+.typing-area:focus {
+    outline: none;
+    border-color: #0288d1; /* Slightly lighter blue when focused */
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.stat-box {
+    background: #64b5f6; /* Medium blue background */
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-align: center;
+    color: #01579b; /* Dark blue text */
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #0288d1; /* Medium blue background */
+    color: #e3f2fd; /* Light blue text */
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #01579b; /* Darker blue on hover */
+}
+
+.feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    color: #01579b; /* Dark blue text */
+}
+
+.error {
+    background-color: #90caf9; /* Light red background for error */
+}
+
+.success {
+    background-color: #d4edda; /* Light green background for success */
+}
+    </style>
+</head>
+<body>
+  <nav class="aLogo">
+  <div class="logo-container">
+    <img src="img/aisat.png" alt="aisatLogo" class="logo-img" />
+    <h3 class="logo-text">AISAT</h3>
+  </div>
+  <h3 class="course-text">ComScie - AE1MA</h3>
+</nav>
+
+<div class="aBody">
+
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Typing Master</h1>
+        <div class="text-display" id="textDisplay"><h4>Click 'Start Test' to begin...</h4></div>
+        <textarea class="typing-area" id="typingArea" disabled placeholder="Start typing here..."></textarea>
+        <div class="stats">
+            <div class="stat-box">
+                Time: <span id="timer">0s</span>
+            </div>
+            <div class="stat-box">
+                WPM: <span id="wpm">0</span>
+            </div>
+            <div class="stat-box">
+                Accuracy: <span id="accuracy">0%</span>
+            </div>
+        </div>
+        <button class="btn" id="startBtn">Start Test</button>
+        <div class="feedback" id="feedback"></div>
+    </div>
+    
+    </div>
+
+    <script>
+        const textDisplay = document.getElementById('textDisplay');
+        const typingArea = document.getElementById('typingArea');
+        const timer = document.getElementById('timer');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const startBtn = document.getElementById('startBtn');
+        const feedback = document.getElementById('feedback');
+
+        let startTime, timerInterval;
+        let isTyping = false;
+
+        const sampleTexts = [
+            "The quick brown fox jumps over the lazy dog.",
+            "To be or not to be, that is the question.",
+            "All that glitters is not gold.",
+            "Practice makes perfect.",
+            "Actions speak louder than words."
+        ];
+
+        function getRandomText() {
+            return sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+        }
+
+        function startTest() {
+            typingArea.value = '';
+            textDisplay.textContent = getRandomText();
+            typingArea.disabled = false;
+            typingArea.focus();
+            startTime = new Date();
+            isTyping = true;
+            startBtn.textContent = 'Restart Test';
+            feedback.textContent = '';
+            feedback.className = 'feedback';
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            if (isTyping) {
+                const currentTime = new Date();
+                const timeDiff = Math.floor((currentTime - startTime) / 1000);
+                timer.textContent = `${timeDiff}s`;
+            }
+        }
+
+        function calculateWPM(timeInSeconds, textLength) {
+            const words = textLength / 5; // Assuming 5 characters = 1 word
+            const minutes = timeInSeconds / 60;
+            return Math.round(words / minutes);
+        }
+
+        function calculateAccuracy(original, typed) {
+            let correct = 0;
+            const totalChars = original.length;
+            
+            for (let i = 0; i < typed.length; i++) {
+                if (typed[i] === original[i]) {
+                    correct++;
+                }
+            }
+            
+            return Math.round((correct / totalChars) * 100);
+        }
+
+        function endTest() {
+            isTyping = false;
+            const timeElapsed = (new Date() - startTime) / 1000;
+            clearInterval(timerInterval);
+            typingArea.disabled = true;
+
+            const wpm = calculateWPM(timeElapsed, textDisplay.textContent.length);
+            const accuracy = calculateAccuracy(textDisplay.textContent, typingArea.value);
+
+            wpmDisplay.textContent = wpm;
+            accuracyDisplay.textContent = `${accuracy}%`;
+
+            let feedbackMessage = '';
+            if (wpm > 40 && accuracy > 95) {
+                feedbackMessage = "Excellent! You're a typing master!";
+                feedback.className = 'feedback success';
+            } else if (wpm > 30 && accuracy > 90) {
+                feedbackMessage = "Good job! Keep practicing!";
+                feedback.className = 'feedback success';
+            } else {
+                feedbackMessage = "Keep practicing to improve your speed and accuracy!";
+                feedback.className = 'feedback error';
+            }
+            feedback.textContent = feedbackMessage;
+        }
+
+        startBtn.addEventListener('click', startTest);
+
+        typingArea.addEventListener('input', () => {
+            if (!isTyping) return;
+
+            const typed = typingArea.value;
+            const original = textDisplay.textContent;
+
+            // Display each letter in red or green
+            let formattedText = '';
+            for (let i = 0; i < original.length; i++) {
+                if (i < typed.length) {
+                    formattedText += `<span style="color: ${typed[i] === original[i] ? 'green' : 'red'};">${original[i]}</span>`;
+                } else {
+                    formattedText += `<span>${original[i]}</span>`;
+                }
+            }
+            textDisplay.innerHTML = formattedText;
+
+            // Update accuracy and WPM
+            const currentAccuracy = calculateAccuracy(original.substring(0, typed.length), typed);
+            accuracyDisplay.textContent = `${currentAccuracy}%`;
+
+            const currentTime = (new Date() - startTime) / 1000;
+            const currentWPM = calculateWPM(currentTime, typed.length);
+            wpmDisplay.textContent = currentWPM;
+
+            if (typed.length >= original.length) {
+                endTest();
+            }
+        });
+    </script>
+</body>
+</html>
