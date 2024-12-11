@@ -1,2 +1,2 @@
 # Typing-Master
-<img src="img/preview.jpg">
+<img src="img/preview.jpg" />
