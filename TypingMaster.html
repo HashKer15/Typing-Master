@@ -183,6 +183,24 @@
         .leaderboard li span {
             font-weight: bold;
         }
+        
+        .clear-btn {
+        display: flex;
+        flex-direction: column;
+    margin-top: 1rem;
+    background: #d32f2f; /* Red background */
+    color: #fff; /* White text */
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.clear-btn:hover {
+    background: #b71c1c; /* Darker red on hover */
+}
     </style>
 </head>
 <body>
@@ -213,12 +231,13 @@
         <div class="feedback" id="feedback"></div>
     </div>
   
-          <div class="leaderboard">
-        <h3>Leaderboard</h3>
-        <ul id="leaderboardList">
-            <!-- Leaderboard items will be inserted here -->
-        </ul>
-    </div>
+<div class="leaderboard">
+  <h3>Leaderboard</h3>
+  <ul id="leaderboardList">
+    <!-- Leaderboard items will be inserted here -->
+  </ul>
+  <button class="btn clear-btn" id="clearLeaderboardBtn">Clear Leaderboard</button>
+</div>
     
     </div>
 
@@ -412,6 +431,19 @@ function endTest() {
         }
     }
 }
+
+// Get the clear button
+const clearLeaderboardBtn = document.getElementById('clearLeaderboardBtn');
+
+// Function to clear leaderboard
+function clearLeaderboard() {
+    leaderboard = []; // Clear the leaderboard array
+    localStorage.removeItem('leaderboard'); // Remove data from localStorage
+    renderLeaderboard(); // Update the leaderboard display
+}
+
+// Add event listener to the button
+clearLeaderboardBtn.addEventListener('click', clearLeaderboard);
 
 renderLeaderboard();
     </script>
